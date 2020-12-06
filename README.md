@@ -27,6 +27,41 @@ adds routes to the system routing tables accordingly.
 Example:
 
     # echo '44.225.188.0/255.255.255.224' | ./route2iproute2.sh via 10.123.0.1 table 123
-    # ip route show table 123
+    $ ip route show table 123
     44.225.188.0/27 via 10.123.0.1
+
+## snmp2route2iproute2.sh
+
+This script combines `snmp2route.sh` and `route2iproute2.sh` to automatically
+add SNMP-obtained routes to the system routing table.
+
+**Note:** This script contains a hardcoded filter to only accept routes to
+prefixes under 44.0.0.0/8.
+
+Example:
+
+    # ./snmp2route2iproute2.sh 44.149.43.1 via 10.123.0.1
+    $ ip route show
+    44.225.188.0/27 via 10.123.0.1
+    […]
+
+## regenerate-iproute2.sh
+
+This script uses `snmp2route2iproute2.sh` and the iproute2 routing tables `44`
+and `45` to automatically regenerate and refresh the SNMP-obtained routes:
+
+It …
+
+0. obtains the current remote routing table via SNMP,
+0. adds it to an unused separate table (44 or 45, whichever is free),
+0. enables use of that table system-wide,
+0. disables use of the previously used table (45 or 44, if one was in use),
+0. empties the previously used table.
+
+Example:
+
+    # ./regenerate-iproute2.sh 44.149.43.1 via 10.123.0.1
+    $ ip route show table 44
+    44.225.188.0/27 via 10.123.0.1
+    […]
 

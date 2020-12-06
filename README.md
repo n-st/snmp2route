@@ -19,3 +19,14 @@ Example:
     44.225.185.192/255.255.255.192
     44.225.188.0/255.255.255.224
 
+## route2iproute2.sh
+
+This script reads routes from stdin, route options from its parameters, and
+adds routes to the system routing tables accordingly.
+
+Example:
+
+    # echo '44.225.188.0/255.255.255.224' | ./route2iproute2.sh via 10.123.0.1 table 123
+    # ip route show table 123
+    44.225.188.0/27 via 10.123.0.1
+

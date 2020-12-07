@@ -61,7 +61,15 @@ num_deleted="$(printf '%s\n' "$lines_deleted" | grep -c . || true)"
 num_total="$(grep -c . "$tempdir/routes-after.txt" || true)"
 
 printf 'Routes: %d added, %d deleted, now %d total\n' "$num_added" "$num_deleted" "$num_total"
-printf '\n'
-printf 'Added:\n%s\n' "$lines_added"
-printf '\n'
-printf 'Deleted:\n%s\n' "$lines_deleted"
+
+if [ "$num_added" -ne 0 ]
+then
+    printf '\n'
+    printf 'Added:\n%s\n' "$lines_added"
+fi
+
+if [ "$num_deleted" -ne 0 ]
+then
+    printf '\n'
+    printf 'Deleted:\n%s\n' "$lines_deleted"
+fi

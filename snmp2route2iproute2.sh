@@ -18,10 +18,10 @@ trap 'rm -rf "$tempdir"' EXIT
 
 cd "$(dirname "$(readlink -f "$0")")" || exit
 
-if ! ./snmp2route.sh "$SNMP_HOST" > routes.txt
+if ! ./snmp2route.sh "$SNMP_HOST" > "$tempdir/routes.txt"
 then
     printf 'snmp2route failed. Aborting.\n' 1>&2
     exit 1
 fi
 
-grep '^44\.' routes.txt | ./route2iproute2.sh "$@"
+grep '^44\.' "$tempdir/routes.txt" | ./route2iproute2.sh "$@"

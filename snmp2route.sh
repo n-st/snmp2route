@@ -23,7 +23,7 @@ then
     exit 1
 fi
 
-orig_linecount=$(grep -c . ipCidrRouteStatus.txt)
+orig_linecount=$(grep -c . ipCidrRouteStatus.txt || true)
 
 # example line:
 # .1.3.6.1.2.1.4.24.4.1.16.10.43.0.0.255.255.0.0.0.44.225.43.1 = INTEGER: 1
@@ -42,7 +42,7 @@ orig_linecount=$(grep -c . ipCidrRouteStatus.txt)
 #   - print the line
 sed -n '/^\.1\.3\.6\.1\.2\.1\.4\.24\.4\.1\.16\.\([0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\)\.\([0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\)\.[0-9]\+\.\([0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\) = INTEGER: 1/{s@@\1/\2@;p}' ipCidrRouteStatus.txt > routes.txt
 
-new_linecount=$(grep -c . routes.txt)
+new_linecount=$(grep -c . routes.txt || true)
 
 if [ "$orig_linecount" -ne "$new_linecount" ]
 then

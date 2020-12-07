@@ -11,6 +11,15 @@ fi
 SNMP_HOST="$1"
 shift
 
+
+tempprefix="$(basename "$0")"
+tempdir="$(mktemp -d -t "${tempprefix}.XXXXXXXXXX")"
+
+trap 'rm -rf "$tempdir"' EXIT
+
+cd "$(dirname "$(readlink -f "$0")")" || exit
+
+
 old_tablenum=""
 
 # get currently used table number
@@ -24,10 +33,14 @@ else
     old_tablenum=44
 fi
 
+ip route show table "$old_tablenum" | sort > "$tempdir/routes-before.txt"
+
 # add routes to new table
 ./snmp2route2iproute2.sh \
     "$SNMP_HOST" \
     "$@" table "$tablenum"
+
+ip route show table "$tablenum" | sort > "$tempdir/routes-after.txt"
 
 # add rule for new table
 ip rule add table "$tablenum"
@@ -40,3 +53,15 @@ then
     # flush old table
     ip route flush table "$old_tablenum"
 fi
+
+lines_added="$(comm -13 "$tempdir/routes-before.txt" "$tempdir/routes-after.txt")"
+lines_deleted="$(comm -23 "$tempdir/routes-before.txt" "$tempdir/routes-after.txt")"
+num_added="$(printf '%s\n' "$lines_added" | grep -c . || true)"
+num_deleted="$(printf '%s\n' "$lines_deleted" | grep -c . || true)"
+num_total="$(grep -c . "$tempdir/routes-after.txt" || true)"
+
+printf 'Routes: %d added, %d deleted, now %d total\n' "$num_added" "$num_deleted" "$num_total"
+printf '\n'
+printf 'Added:\n%s\n' "$lines_added"
+printf '\n'
+printf 'Deleted:\n%s\n' "$lines_deleted"

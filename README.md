@@ -61,6 +61,13 @@ It …
 Example:
 
     # ./regenerate-iproute2.sh 44.149.43.1 via 10.123.0.1
+    Routes: 3 added, 0 deleted, now 2695 total
+    
+    Added:
+    44.2.10.0/29 via 10.123.0.1
+    44.2.2.0/24 via 10.123.0.1
+    44.2.7.24/29 via 10.123.0.1
+    
     $ ip route show table 44
     44.225.188.0/27 via 10.123.0.1
     […]
